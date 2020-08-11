@@ -1,0 +1,10 @@
+// not really necessary
+{
+  "parser": "babel-eslint",
+  "rules": {
+    // don't allow console logs (demo)
+    // "no-console": "warn",
+  }
+  // can add airbnb styleguide
+  // "extends": ["airbnb-base"]
+}
