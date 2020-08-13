@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, lazy } from "react";
 import "./App.css";
 import Page1 from "./components/Page1";
 import Page2 from "./components/Page2";
 import Page3 from "./components/Page3";
+
+const Page1Lazy = lazy(() => import("./components/Page1"));
+const Page2Lazy = lazy(() => import("./components/Page2"));
+const Page3Lazy = lazy(() => import("./components/Page3"));
 
 const App = () => {
   const [state, setState] = useState({
@@ -29,15 +33,15 @@ const App = () => {
 
   return (
     // no code splitting
-    <div className="App">
-      {state.route === "page1" ? (
-        <Page1 onRouteChange={onRouteChange} />
-      ) : state.route === "page2" ? (
-        <Page2 onRouteChange={onRouteChange} />
-      ) : (
-        state.route === "page3" && <Page3 onRouteChange={onRouteChange} />
-      )}
-    </div>
+    // <div className="App">
+    //   {state.route === "page1" ? (
+    //     <Page1 onRouteChange={onRouteChange} />
+    //   ) : state.route === "page2" ? (
+    //     <Page2 onRouteChange={onRouteChange} />
+    //   ) : (
+    //     state.route === "page3" && <Page3 onRouteChange={onRouteChange} />
+    //   )}
+    // </div>
 
     /* const AsyncPage1 = AsyncComponent(() => import("./components/Page1")) */
     /* const AsyncPage2 = AsyncComponent(() => import("./components/Page2")) */
@@ -51,6 +55,17 @@ const App = () => {
     //     <state.component onRouteChange={onRouteChange} />
     //   )}
     // </div>
+
+    // react lazy
+    <div className="App">
+      {state.route === "page1" ? (
+        <Page1Lazy onRouteChange={onRouteChange} />
+      ) : state.route === "page2" ? (
+        <Page2Lazy onRouteChange={onRouteChange} />
+      ) : (
+        state.route === "page3" && <Page3Lazy onRouteChange={onRouteChange} />
+      )}
+    </div>
   );
 };
 
