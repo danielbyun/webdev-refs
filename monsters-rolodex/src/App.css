@@ -2,8 +2,16 @@
   text-align: center;
 }
 
+@font-face {
+  font-display: swap;
+  font-family: "SEGA LOGO FONT";
+  font-style: normal;
+  font-weight: normal;
+  src: local("SEGA LOGO FONT"), url("SEGA.woff") format("woff");
+}
+
 h1 {
-  font-family: "Bigelow Rules";
+  font-family: "SEGA LOGO FONT";
   font-size: 72px;
   color: #0ccac4;
 }
