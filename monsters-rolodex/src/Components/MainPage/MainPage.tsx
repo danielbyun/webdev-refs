@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, ReactNode } from "react";
 
 import "../../../src/App.css";
 
@@ -20,13 +20,14 @@ const MainPage = ({
   isPending: any;
   onRequestRobots: any;
   onSearchChange: any;
+  children?: ReactNode;
 }) => {
   useEffect(() => {
     onRequestRobots();
   }, [onRequestRobots]);
 
   const filterRobots = () => {
-    return robots.filter((robot) => {
+    return robots.filter((robot: any) => {
       return robot.name.toLowerCase().includes(searchField.toLowerCase());
     });
   };
