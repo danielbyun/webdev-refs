@@ -14,6 +14,12 @@ const MainPage = ({
   isPending,
   onRequestRobots,
   onSearchChange,
+}: {
+  robots: any;
+  searchField: any;
+  isPending: any;
+  onRequestRobots: any;
+  onSearchChange: any;
 }) => {
   useEffect(() => {
     onRequestRobots();

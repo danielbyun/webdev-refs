@@ -3,13 +3,14 @@ import React, { Fragment } from "react";
 import Card from "../Card/Card";
 import "./CardList.css";
 
-const CardList = props => {
-  const { robots } = props;
+import { IRobots } from "../../App";
+
+const CardList = ({ robots }: { robots: Array<IRobots> }) => {
   return (
     <Fragment>
       {robots !== undefined && (
         <div className="card-list">
-          {robots.map(robot => (
+          {robots.map((robot) => (
             <Card key={robot.id} robot={robot} />
           ))}
         </div>

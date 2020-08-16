@@ -2,8 +2,11 @@ import React from "react";
 
 import "./SearchBox.css";
 
-const SearchBox = (props) => {
-  const { onSearchChange } = props;
+interface ISearchBoxProps {
+  onSearchChange(event: React.SyntheticEvent<HTMLInputElement>): void;
+}
+
+const SearchBox = ({ onSearchChange }: ISearchBoxProps) => {
   return (
     <input
       aria-label="Search Robots"

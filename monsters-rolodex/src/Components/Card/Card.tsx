@@ -2,10 +2,17 @@ import React from "react";
 
 import "./Card.css";
 
-const Card = props => {
-  const { robot } = props;
-  const { name, email, id } = robot;
+interface CardStatelessProps {
+  robot: {
+    name: string;
+    email: string;
+    id: number;
+  };
+}
 
+const Card: React.SFC<CardStatelessProps> = ({
+  robot: { name, email, id },
+}) => {
   return (
     <div className="card-container">
       <img
