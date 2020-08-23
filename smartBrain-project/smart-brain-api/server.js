@@ -22,6 +22,8 @@ const db = knex({
 
 const app = express();
 
+console.log("check if docker automatically updates");
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan("combined"));
