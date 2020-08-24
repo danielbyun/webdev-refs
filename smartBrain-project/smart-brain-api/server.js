@@ -10,19 +10,20 @@ const signin = require("./controllers/signin");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 
+require("dotenv").config();
+
 const db = knex({
   client: "mysql",
-  connection: {
-    host: "127.0.0.1",
-    user: "root",
-    password: "12345678",
-    database: "smart_brain",
-  },
+  connection: process.env.MYSQL_URI,
+  // {
+  //   host: process.env.MYSQL_HOST,
+  //   user: process.env.MYSQL_USER,
+  //   password: process.env.MYSQL_ROOT_PASSWORD,
+  //   database: process.env.MYSQL_DB,
+  // },
 });
 
 const app = express();
-
-console.log("check if docker automatically updates");
 
 app.use(cors());
 app.use(bodyParser.json());

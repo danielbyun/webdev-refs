@@ -30,3 +30,9 @@ RUN npm install
 
 ## determining the port number
 ## docker run -it -p 3000:3000 [containername]
+
+## run it in background
+## docker-compose up -d
+
+## go into running docker container
+# docker-compose exec [containername] bash
