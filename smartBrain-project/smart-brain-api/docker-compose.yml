@@ -1,6 +1,18 @@
 version: "3.8"
 
 services:
+  # postgres:
+  #   container_name: postgres
+  #   build: ./postgres
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: 12345678
+  #     POSTGRES_URL: postgres://postgres:12345678@localhost:5432/smart-brain
+  #     POSTGRES_DB: smart-brain
+  #     POSTGRES_HOST: postgres
+  #   ports:
+  #     - "5432"
+
   # backend api
   smart-brain-api:
     container_name: backend
@@ -8,12 +20,11 @@ services:
     build: ./
     command: npm start
     working_dir: /usr/src/smart-brain-api
-    environment:
-      MYSQL_URI: mysql://root:12345678@mysql:3306/smartbrain-docker
-    links:
-      - mysql
     ports:
       - "3000:3000"
+    environment:
+      MYSQL_URI: jdbc:mysql://root:12345678@mysql:3306/smart_brain
+      # POSTGRES_URI: postgres://postgres:12345678@postgres:5432/smart-brain
     volumes:
       - ./:/usr/src/smart-brain-api
 
@@ -22,9 +33,9 @@ services:
     # container_name: mysql
     build: ./mysql
     ports:
-      - "3306:3306"
+      - "3306"
     environment:
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: smartbrain-docker
+      MYSQL_DATABASE: smart_brain
       MYSQL_HOST: mysql

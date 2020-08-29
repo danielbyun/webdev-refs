@@ -10,28 +10,36 @@ const signin = require("./controllers/signin");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 
-require("dotenv").config();
+// require("dotenv").config();
 
 const db = knex({
   client: "mysql",
   connection: process.env.MYSQL_URI,
-  // {
-  //   host: process.env.MYSQL_HOST,
-  //   user: process.env.MYSQL_USER,
-  //   password: process.env.MYSQL_ROOT_PASSWORD,
-  //   database: process.env.MYSQL_DB,
-  // },
+  // client: "pg",
+  // connection: process.env.POSTGRES_URI,
 });
 
 const app = express();
 
 app.use(cors());
+
+const whiteList = ["http://localhost:3001"];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("not allowed by CORS"));
+    }
+  },
+};
+
 app.use(bodyParser.json());
+app.use(cors(corsOptions));
 app.use(morgan("combined"));
 
 app.get("/", (req, res) => {
-  // res.send(db.users);
-  res.send("ITS WORKING");
+  res.send("works!");
 });
 app.post("/signin", signin.handleSignin(db, bcrypt));
 app.post("/register", (req, res) => {
