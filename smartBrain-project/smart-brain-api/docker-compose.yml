@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MYSQL_URI: jdbc:mysql://root:12345678@mysql:3306/smart_brain
+      MYSQL_URI: jdbc:mysql://root:12345678@mysql:3306/smart_brain?useSSL=false&serverTimezone=Asia/Seoul
       # POSTGRES_URI: postgres://postgres:12345678@postgres:5432/smart-brain
     volumes:
       - ./:/usr/src/smart-brain-api

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Particles from "react-particles-js";
-import axios from "axios";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 import Navigation from "./components/Navigation/Navigation";
 import Signin from "./components/Signin/Signin";
@@ -8,9 +7,9 @@ import Register from "./components/Register/Register";
 import Logo from "./components/Logo/Logo";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import Rank from "./components/Rank/Rank";
-import "./App.css";
-import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
+import Modal from "./components/Modal/Modal";
+import "./App.css";
 
 const particlesOptions = {
   particles: {
@@ -28,9 +27,9 @@ const initialState = {
   input: "",
   imageUrl: "",
   boxes: [],
-  route: "home",
-  isProfileOpen: true,
-  isSignedIn: true,
+  route: "signin",
+  isProfileOpen: false,
+  isSignedIn: false,
   user: {
     id: "",
     name: "",
@@ -48,6 +47,43 @@ class App extends Component {
     this.state = initialState;
   }
 
+  componentDidMount() {
+    const token = window.sessionStorage.getItem("token");
+
+    if (token && token !== "undefined") {
+      fetch("http://localhost:3000/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      })
+        .then((response) => {
+          console.log(response);
+          response.json();
+        })
+        .then((data) => {
+          if (data && data.id) {
+            fetch(`http://localhost:3000/profile/${data.id}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+              },
+            })
+              .then((response) => response.json())
+              .then((user) => {
+                if (user && user.email) {
+                  this.loadUser(user);
+                  this.onRouteChange("home");
+                }
+              });
+          }
+        })
+        .catch(console.log);
+    }
+  }
+
   loadUser = (data) => {
     this.setState({
       user: {
@@ -60,22 +96,22 @@ class App extends Component {
     });
   };
 
-  calculateFaceLocations = (data) => {
-    return data.outputs[0].data.regions.map((region) => {
-      const image = document.getElementById("inputimage");
-      const width = Number(image.width);
-      const height = Number(image.height);
+  calculateFaceLocation = (data) => {
+    const image = document.getElementById("inputimage");
+    const width = Number(image.width);
+    const height = Number(image.height);
+    return data.outputs[0].data.regions.map((face) => {
+      const clarifaiFace = face.region_info.bounding_box;
       return {
-        id: region.id,
-        leftCol: region.region_info.bounding_box.left_col * width,
-        topRow: region.region_info.bounding_box.top_row * height,
-        rightCol: width - region.region_info.bounding_box.right_col * width,
-        bottomRow: height - region.region_info.bounding_box.bottom_row * height,
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - clarifaiFace.right_col * width,
+        bottomRow: height - clarifaiFace.bottom_row * height,
       };
     });
   };
 
-  displayFaceBoxes = (boxes) => {
+  displayFaceBox = (boxes) => {
     this.setState({ boxes: boxes });
   };
 
@@ -85,62 +121,38 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    axios({
+    fetch("http://localhost:3000/imageurl", {
       method: "post",
-      url: "http://localhost:3000/imageurl",
-      headers: { "Content-Type": "application/json" },
-      data: {
-        input: this.state.input,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: window.sessionStorage.getItem("token"),
       },
+      body: JSON.stringify({
+        input: this.state.input,
+      }),
     })
-      .then((res) => {
-        return res.data;
-      })
-      .then((res) => {
-        if (res) {
-          axios({
+      .then((response) => response.json())
+      .then((response) => {
+        if (response) {
+          fetch("http://localhost:3000/image", {
             method: "put",
-            url: "http://localhost:3000/image",
-            headers: { "Content-Type": "application/json" },
-            data: {
-              id: this.state.user.id,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: window.sessionStorage.getItem("token"),
             },
+            body: JSON.stringify({
+              id: this.state.user.id,
+            }),
           })
-            .then((resp) => resp.data)
-            .then((count) =>
-              this.setState(Object.assign(this.state.user, { entries: count }))
-            )
-            .catch((err) => console.error(err));
+            .then((response) => response.json())
+            .then((count) => {
+              this.setState(Object.assign(this.state.user, { entries: count }));
+            })
+            .catch(console.log);
         }
-        this.displayFaceBoxes(this.calculateFaceLocations(res));
-      });
-
-    // fetch("http://localhost:3000/imageurl", {
-    //   method: "post",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     input: this.state.input,
-    //   }),
-    // })
-    //   .then((response) => response.json())
-    //   .then((response) => {
-    //     if (response) {
-    //       fetch("http://localhost:3000/image", {
-    //         method: "put",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify({
-    //           id: this.state.user.id,
-    //         }),
-    //       })
-    //         .then((response) => response.json())
-    //         .then((count) => {
-    //           this.setState(Object.assign(this.state.user, { entries: count }));
-    //         })
-    //         .catch(console.log);
-    //     }
-    //     this.displayFaceBoxes(this.calculateFaceLocations(response));
-    //   })
-    //   .catch((err) => console.error(err));
+        this.displayFaceBox(this.calculateFaceLocation(response));
+      })
+      .catch((err) => console.log(err));
   };
 
   onRouteChange = (route) => {
